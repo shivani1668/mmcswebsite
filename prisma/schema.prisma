@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String
+  role          Role      @default(ADMIN)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model PageContent {
+  id          String   @id @default(cuid())
+  pageKey     String   // e.g., "home", "about", "curriculum"
+  sectionKey  String   // e.g., "hero", "mission", "principal-message"
+  content     String   @db.Text
+  updatedAt   DateTime @updatedAt
+
+  @@unique([pageKey, sectionKey])
+}
+
+model GalleryItem {
+  id          String   @id @default(cuid())
+  url         String
+  publicId    String   // Cloudinary public_id
+  title       String?
+  description String?
+  category    String   // e.g., "campus", "events", "activities"
+  createdAt   DateTime @default(now())
+}
+
+enum FormStatus {
+  PENDING
+  REVIEWED
+  ACCEPTED
+  REJECTED
+}
+
+model AdmissionForm {
+  id              String     @id @default(cuid())
+  studentName     String
+  fatherName      String
+  motherName      String
+  dateOfBirth     DateTime
+  gender          String
+  className       String
+  phone           String
+  email           String?
+  address         String     @db.Text
+  previousSchool  String?
+  status          FormStatus @default(PENDING)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+model ContactSubmission {
+  id        String     @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String     @db.Text
+  status    FormStatus @default(PENDING)
+  createdAt DateTime   @default(now())
+}
+
+model NewsEvent {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+  date        DateTime @default(now())
+  image       String?  // Cloudinary URL
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
